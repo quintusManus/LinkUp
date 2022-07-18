@@ -1,5 +1,5 @@
 from flask import Flask, render_template, url_for, flash, redirect
-from forms import RegistrationForm
+from forms import RegistrationForm, RegistrationForm2
 from flask_behind_proxy import FlaskBehindProxy
 from flask_sqlalchemy import SQLAlchemy
 from flask import Flask, render_template, url_for
@@ -43,7 +43,7 @@ def register():
 
 @app.route("/login", methods=['GET', 'POST'])
 def login():
-    form = RegistrationForm()
+    form = RegistrationForm2()
     if form.validate_on_submit(): # checks if entries are valid
         if form.validate_on_submit():
             user = User(username=form.username.data, password=form.password.data)
@@ -51,7 +51,11 @@ def login():
             db.session.commit()
         flash(f'Account created for {form.username.data}!', 'success')
         return redirect(url_for('home')) # if so - send to home page
-    return render_template('login.html', title='Login', form=form)
+    return render_template('login.html', title='Login', form=form) 
+
+@app.route("/questionnaire")
+def questions():
+    return render_template('questionnaire.html', subtitle='Questionnaire Page', text='This is the questionnaire page')
 
 
 if __name__ == '__main__':
