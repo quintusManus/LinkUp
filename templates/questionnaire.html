@@ -79,126 +79,75 @@
   
 <body>
     <h1>Questionnaire</h1>
-  
+   
     <!-- Create Form -->
-    <form id="form">
+    <form method="POST" id="form">
  
         <!-- Details -->
-        <div class="form-control">
-            <label for="name" id="label-name">
-                Name
-            </label>
- 
-            <!-- Input Type Text -->
-            <input type="text"
-                   id="name"
-                   placeholder="Enter your name" />
-        </div>
   
         <div class="form-control">
-            <label for="email" id="label-email">
-                Email
-            </label>
- 
-            <!-- Input Type Email-->
-            <input type="email"
-                   id="email"
-                   placeholder="Enter your email" />
-        </div>
-  
-        <div class="form-control">
-            <label for="age" id="label-age">
-                Age
-            </label>
- 
-            <!-- Input Type Text -->
-            <input type="text"
-                   id="age"
-                   placeholder="Enter your age" />
-        </div>
-  
-        <div class="form-control">
-            <label for="role" id="label-role">
-                Which option best describes you?
+            <label for="answer" id="label-answer">
+                Are you interested in Astrology?
             </label>
              
             <!-- Dropdown options -->
-            <select name="role" id="role">
-                <option value="student">Student</option>
-                <option value="intern">Intern</option>
-                <option value="professional">
-                    Professional
-                </option>
-                <option value="other">Other</option>
+            <select name="astrology" id="answer">
+                <option value="yes">Yes</option>
+                <option value="no">No</option>
             </select>
         </div>
-  
-        
-            <!-- Input Type Radio Button -->
-            <label for="recommed-1">
-                <input type="radio"
-                       id="recommed-1"
-                       name="recommed">Yes</input>
-            </label>
-            <label for="recommed-2">
-                <input type="radio"
-                       id="recommed-2"
-                       name="recommed">No</input>
-            </label>
-            <label for="recommed-3">
-                <input type="radio"
-                       id="recommed-3"
-                       name="recommed">Maybe</input>
-            </label>
-        </div>
-  
+
         <div class="form-control">
-            <label>Languages and Frameworks known
-                <small>(Check all that apply)</small>
+            <label for="TA" id="label-TA">
+                Who is the best TA?
             </label>
-            <!-- Input Type Checkbox -->
-            <label for="inp-1">
-                <input type="checkbox"
-                       name="inp">C</input></label>
-            <label for="inp-2">
-                <input type="checkbox"
-                       name="inp">C++</input></label>
-            <label for="inp-3">
-                <input type="checkbox"
-                       name="inp">C#</input></label>
-            <label for="inp-4">
-                <input type="checkbox"
-                       name="inp">Java</input></label>
-            <label for="inp-5">
-                <input type="checkbox"
-                       name="inp">Python</input></label>
-            <label for="inp-6">
-                <input type="checkbox"
-                       name="inp">JavaScript</input></label>
-            <label for="inp-7">
-                <input type="checkbox"
-                       name="inp">React</input></label>
-            <label for="inp-7">
-                <input type="checkbox"
-                       name="inp">Angular</input></label>
-            <label for="inp-7">
-                <input type="checkbox"
-                       name="inp">Django</input></label>
-            <label for="inp-7">
-                <input type="checkbox"
-                       name="inp">Spring</input></label>
+             
+            <!-- Dropdown options -->
+            <select name="t.a" id="answer">
+                <option value="TA">Preston Harvey</option>
+                <option value="TA">Preston Harvey</option>
+                <option value="TA">Preston Harvey</option>
+                <option value="TA">Preston Harvey</option>      
+            </select>
         </div>
-  
+
         <div class="form-control">
-            <label for="comment">
-                Any comments or suggestions
+            <label for="juice" id="label-juice">
+                Is Apple juice better than Orange juice?
             </label>
- 
-            <!-- multi-line text input control -->
-            <textarea name="comment" id="comment"
-                placeholder="Enter your comment here">
-            </textarea>
+             
+            <!-- Dropdown options -->
+            <select name="juice" id="answer">
+                <option value="yes">Yes</option>
+                <option value="no">No</option>
+            </select>
         </div>
+
+        <div class="form-control">
+            <label for="planet" id="label-planets">
+                Do you believe there is life in other planets?
+            </label>
+             
+            <!-- Dropdown options -->
+            <select name="planets" id="answer">
+                <option value="yes">Yes</option>
+                <option value="no">No</option>
+            </select>
+        </div>
+
+        <div class="form-control">
+            <label for="planet" id="label-planets">
+                Can money bring you happiness?
+            </label>
+             
+            <!-- Dropdown options -->
+            <select name="money" id="answer">
+                <option value="yes">Yes</option>
+                <option value="no">No</option>
+            </select>
+        </div>
+
+
   
         <!-- Multi-line Text Input Control -->
         <button type="submit" value="submit">
