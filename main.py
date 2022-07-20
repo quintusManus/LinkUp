@@ -44,8 +44,7 @@ class prompt(db.Model):
     def __repr__(self):
         return f"prompt('{self.Q1}', '{self.Q2}', '{self.Q3}', '{self.Q4}', '{self.Q5}')" 
 
-    def stringTo(self):
-        return ""
+    
     
 
 @app.route("/")
@@ -86,7 +85,12 @@ def login():
 
 @app.route("/questionnaire", methods=['GET', 'POST'])
 def questions():
-    
+    return render_template('questionnaire.html', subtitle='Questionnaire Page', text='This is the questionnaire page')
+
+#Where questionnaire data is actually added to the database. Linked here from submit button in questionnaire.html, 
+#action="/questionnaire-result"
+@app.route("/questionnaire-result", methods=['POST'])
+def results():
     answer_1 = request.form.get('astrology')
     answer_2 = request.form.get('t.a')
     answer_3 = request.form.get('juice')
@@ -96,11 +100,11 @@ def questions():
 
     user_answers = prompt(Q1 = answer_1 , Q2 = answer_2 , Q3 = answer_3 , Q4 = answer_4, Q5 = answer_5)
     
-    #Integrity error here
     db.session.add(user_answers)
     db.session.commit()
-
-    return render_template('questionnaire.html', subtitle='Questionnaire Page', text='This is the questionnaire page')
+    
+    #send the user back home when they submit the questionnaire. Can be changed to another page
+    return render_template('home.html', subtitle='Home Page', text='This is the home page')
 
 
 if __name__ == '__main__':
