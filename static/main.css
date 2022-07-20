@@ -144,3 +144,9 @@ img.avatar {
     float: none;
   }
 }
+
+* {
+    margin: 0;
+    padding: 0
+}
+
