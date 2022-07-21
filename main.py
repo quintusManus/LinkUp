@@ -2,7 +2,7 @@ from flask import Flask, render_template, url_for, flash, redirect, request
 from forms import RegistrationForm, RegistrationForm2
 from flask_behind_proxy import FlaskBehindProxy
 from flask_sqlalchemy import SQLAlchemy
-from flask import Flask, render_template, url_for
+from flask import Flask, render_template, url_for, session
 import random, threading, webbrowser
 from sqlalchemy import create_engine, Table, Column, Integer, String, MetaData, insert, update
 import sqlite3
@@ -141,8 +141,6 @@ def results():
 
     connection.commit()
 
-    connection.close()
-
     #query username
     connection = sqlite3.connect("site.db")
     cur = connection.cursor()
@@ -176,6 +174,10 @@ def results():
     list = cur.fetchall()
     randomUsername = list[0][1]
 
+    cur.execute("SELECT * FROM {}".format(username))
+    matchesList = cur.fetchall()
+    print(matchesList)
+
     while randomUsername == username:
         cur.execute("SELECT * FROM users ORDER BY RANDOM() LIMIT 1")
         list = cur.fetchall()
@@ -187,7 +189,9 @@ def results():
     randomQ4 = list[0][7]
     randomQ5 = list[0][8]
 
-    session['username'] = username
+    #stores randomUsername and currentUsername for later use
+    session['linkedUsername'] = randomUsername
+    session['currentUsername'] = username
 
     #send the user back home when they submit the questionnaire. Can be changed to another page
     return render_template('match.html', subtitle='Home Page', text='This is the home page', username=username, 
@@ -201,10 +205,17 @@ def match():
     return render_template('match.html', subtitle='Match Page', text='Welcome to the real Fun!')
 
 
-@app.route("/match-results", methods=['POST'])
+@app.route("/match-results")
 def match_results():
-    username = session.get('username', None)
+    linkedUsername = session.get('linkedUsername', None)
+    currentUsername = session.get('currentUsername', None)
 
+    connection = sqlite3.connect("site.db")
+    cur = connection.cursor()
+    cur.execute("INSERT INTO {} (matches) VALUES({});".format(currentUsername, linkedUsername))
+    connection.commit()
+
+    return render_template('match.html')
 
 
 '''@app.route("/match-result", methods=['POST'])
