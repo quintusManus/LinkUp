@@ -77,21 +77,69 @@ def register():
 #LOGIN
 @app.route("/login", methods=['GET', 'POST'])
 def login():
+    
     form = RegistrationForm2()
 
-    if form.validate_on_submit(): # checks if entries are valid
+    username = form.username.data
+    password = form.password.data
 
-        user = users(username=form.username.data, password=form.password.data)
+    #get username and password from database
+    connection = sqlite3.connect("site.db")
+    cur = connection.cursor()
+    cur.execute("SELECT username, password FROM users WHERE username='{}'".format(username))
+    usernameExists = cur.fetchone()
+    if usernameExists == None:
+        return render_template('login.html', title='Login', form=form)
 
-        db.session.add(user)
+    #print(usernameExists)
+    #cur.execute("EXISTS(SELECT 1 FROM users WHERE username='{}'".format(username))
 
-        db.session.commit()
 
-        flash(f'Account created for {form.username.data}!', 'success')
+    #query questionnaire
+    cur.execute("SELECT Q1 FROM users WHERE username='{}'".format(username))
+    list = cur.fetchall()
+    Q1 = list[0][0]
 
-        return redirect(url_for('home')) # if so - send to home page
+    cur.execute("SELECT Q2 FROM users WHERE username='{}'".format(username))
+    list = cur.fetchall()
+    Q2 = list[0][0]
 
-    return render_template('login.html', title='Login', form=form)
+    cur.execute("SELECT Q3 FROM users WHERE username='{}'".format(username))
+    list = cur.fetchall()
+    Q3 = list[0][0]
+
+    cur.execute("SELECT Q4 FROM users WHERE username='{}'".format(username))
+    list = cur.fetchall()
+    Q4 = list[0][0]
+
+    cur.execute("SELECT Q5 FROM users WHERE username='{}'".format(username))
+    list = cur.fetchall()
+    Q5 = list[0][0]
+
+    #pick a random user from the table 
+    cur.execute("SELECT * FROM users ORDER BY RANDOM() LIMIT 1")
+    list = cur.fetchall()
+    randomUsername = list[0][1]
+    
+    cur.execute("SELECT matches FROM {} WHERE matches='{}'".format(username, randomUsername))
+    random = cur.fetchone()
+    while random == username:
+        cur.execute("SELECT * FROM users ORDER BY RANDOM() LIMIT 1")
+        list = cur.fetchall()
+        random = list[0][1]
+
+
+
+    randomQ1 = list[0][4]
+    randomQ2 = list[0][5]
+    randomQ3 = list[0][6]
+    randomQ4 = list[0][7]
+    randomQ5 = list[0][8]
+
+    session['linkedUsername'] = random
+    session['currentUsername'] = username
+    return render_template('match.html', title='Login', form=form, username=username,
+    Q1=Q1, Q2=Q2, Q3=Q3, Q4=Q4, Q5=Q5, randomUsername=randomUsername, randomQ1=randomQ1, randomQ2=randomQ2, randomQ3=randomQ3, randomQ4=randomQ4, randomQ5=randomQ5)
 
 
 @app.route("/questionnaire", methods=['GET', 'POST'])
@@ -174,10 +222,6 @@ def results():
     list = cur.fetchall()
     randomUsername = list[0][1]
 
-    cur.execute("SELECT * FROM {}".format(username))
-    matchesList = cur.fetchall()
-    print(matchesList)
-
     while randomUsername == username:
         cur.execute("SELECT * FROM users ORDER BY RANDOM() LIMIT 1")
         list = cur.fetchall()
@@ -193,7 +237,7 @@ def results():
     session['linkedUsername'] = randomUsername
     session['currentUsername'] = username
 
-    #send the user back home when they submit the questionnaire. Can be changed to another page
+    #send the user to the match page
     return render_template('match.html', subtitle='Home Page', text='This is the home page', username=username, 
     Q1=Q1, Q2=Q2, Q3=Q3, Q4=Q4, Q5=Q5, randomUsername=randomUsername, randomQ1=randomQ1, randomQ2=randomQ2, randomQ3=randomQ3, randomQ4=randomQ4, randomQ5=randomQ5)
 
@@ -202,20 +246,136 @@ def results():
 
 @app.route("/match", methods=['GET', 'POST'])
 def match():
-    return render_template('match.html', subtitle='Match Page', text='Welcome to the real Fun!')
+    linkedUsername = session.get('linkedUsername', None)
+    currentUsername = session.get('currentUsername', None)
+    #query username
+    connection = sqlite3.connect("site.db")
+    cur = connection.cursor()
+    cur.execute("SELECT username FROM users ORDER BY id DESC LIMIT 1")
+    list = cur.fetchall()
+    username = list[0][0]
+    
+    #checks if there's a user logged in
+    if username != currentUsername:
+        username = currentUsername
+
+    #query questionnaire
+    cur.execute("SELECT Q1 FROM users ORDER BY id DESC LIMIT 1")
+    list = cur.fetchall()
+    Q1 = list[0][0]
+
+    cur.execute("SELECT Q2 FROM users ORDER BY id DESC LIMIT 1")
+    list = cur.fetchall()
+    Q2 = list[0][0]
+
+    cur.execute("SELECT Q3 FROM users ORDER BY id DESC LIMIT 1")
+    list = cur.fetchall()
+    Q3 = list[0][0]
+
+    cur.execute("SELECT Q4 FROM users ORDER BY id DESC LIMIT 1")
+    list = cur.fetchall()
+    Q4 = list[0][0]
+
+    cur.execute("SELECT Q5 FROM users ORDER BY id DESC LIMIT 1")
+    list = cur.fetchall()
+    Q5 = list[0][0]
+
+    #pick a random user from the table 
+    cur.execute("SELECT * FROM users ORDER BY RANDOM() LIMIT 1")
+    list = cur.fetchall()
+    randomUsername = list[0][1]
+
+    cur.execute("SELECT * FROM {}".format(username))
+    matchesList = cur.fetchall()
+    print(matchesList)
+
+    cur.execute("SELECT matches FROM {} WHERE matches='{}'".format(username, randomUsername))
+    random = cur.fetchall()
+    while random == username:
+        cur.execute("SELECT * FROM users ORDER BY RANDOM() LIMIT 1")
+        list = cur.fetchall()
+    
+    random = list[0][1]
+
+    randomQ1 = list[0][4]
+    randomQ2 = list[0][5]
+    randomQ3 = list[0][6]
+    randomQ4 = list[0][7]
+    randomQ5 = list[0][8]
+    return render_template('match.html', username=currentUsername, 
+    Q1=Q1, Q2=Q2, Q3=Q3, Q4=Q4, Q5=Q5, randomUsername=randomUsername, randomQ1=randomQ1, randomQ2=randomQ2, randomQ3=randomQ3, randomQ4=randomQ4, randomQ5=randomQ5)
 
 
 @app.route("/match-results")
 def match_results():
+    
     linkedUsername = session.get('linkedUsername', None)
     currentUsername = session.get('currentUsername', None)
 
     connection = sqlite3.connect("site.db")
     cur = connection.cursor()
-    cur.execute("INSERT INTO {} (matches) VALUES({});".format(currentUsername, linkedUsername))
+    cur.execute("INSERT INTO {} (matches) VALUES('{}');".format(currentUsername, linkedUsername))
+
+    
+    #query username
+    connection = sqlite3.connect("site.db")
+    cur = connection.cursor()
+    cur.execute("SELECT username FROM users ORDER BY id DESC LIMIT 1")
+    list = cur.fetchall()
+    username = list[0][0]
+    
+    #checks if there's a user logged in
+    if username != currentUsername:
+        username = currentUsername
+    
+    #query questionnaire
+    cur.execute("SELECT Q1 FROM users ORDER BY id DESC LIMIT 1")
+    list = cur.fetchall()
+    Q1 = list[0][0]
+
+    cur.execute("SELECT Q2 FROM users ORDER BY id DESC LIMIT 1")
+    list = cur.fetchall()
+    Q2 = list[0][0]
+
+    cur.execute("SELECT Q3 FROM users ORDER BY id DESC LIMIT 1")
+    list = cur.fetchall()
+    Q3 = list[0][0]
+
+    cur.execute("SELECT Q4 FROM users ORDER BY id DESC LIMIT 1")
+    list = cur.fetchall()
+    Q4 = list[0][0]
+
+    cur.execute("SELECT Q5 FROM users ORDER BY id DESC LIMIT 1")
+    list = cur.fetchall()
+    Q5 = list[0][0]
+
+    #pick a random user from the table 
+    cur.execute("SELECT * FROM users ORDER BY RANDOM() LIMIT 1")
+    list = cur.fetchall()
+    randomUsername = list[0][1]
+
+    cur.execute("SELECT * FROM {}".format(username))
+    matchesList = cur.fetchall()
+    print(matchesList)
+
+    cur.execute("SELECT matches FROM {} WHERE matches='{}'".format(username, randomUsername))
+    random = cur.fetchall()
+    while random == username:
+        cur.execute("SELECT * FROM users ORDER BY RANDOM() LIMIT 1")
+        list = cur.fetchall()
+    
+    random = list[0][1]
+
+    randomQ1 = list[0][4]
+    randomQ2 = list[0][5]
+    randomQ3 = list[0][6]
+    randomQ4 = list[0][7]
+    randomQ5 = list[0][8]
+
     connection.commit()
 
-    return render_template('match.html')
+    return render_template('match.html', username=username, 
+    Q1=Q1, Q2=Q2, Q3=Q3, Q4=Q4, Q5=Q5, randomUsername=randomUsername, randomQ1=randomQ1, randomQ2=randomQ2, randomQ3=randomQ3, randomQ4=randomQ4, randomQ5=randomQ5)
 
 
 '''@app.route("/match-result", methods=['POST'])
