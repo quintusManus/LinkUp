@@ -143,18 +143,67 @@ def results():
 
     connection.close()
 
+    #query username
+    connection = sqlite3.connect("site.db")
+    cur = connection.cursor()
+    cur.execute("SELECT username FROM users ORDER BY id DESC LIMIT 1")
+    list = cur.fetchall()
+    username = list[0][0]
+
+    #query questionnaire
+    cur.execute("SELECT Q1 FROM users ORDER BY id DESC LIMIT 1")
+    list = cur.fetchall()
+    Q1 = list[0][0]
+
+    cur.execute("SELECT Q2 FROM users ORDER BY id DESC LIMIT 1")
+    list = cur.fetchall()
+    Q2 = list[0][0]
+
+    cur.execute("SELECT Q3 FROM users ORDER BY id DESC LIMIT 1")
+    list = cur.fetchall()
+    Q3 = list[0][0]
+
+    cur.execute("SELECT Q4 FROM users ORDER BY id DESC LIMIT 1")
+    list = cur.fetchall()
+    Q4 = list[0][0]
+
+    cur.execute("SELECT Q5 FROM users ORDER BY id DESC LIMIT 1")
+    list = cur.fetchall()
+    Q5 = list[0][0]
+
+    #pick a random user from the table 
+    cur.execute("SELECT * FROM users ORDER BY RANDOM() LIMIT 1")
+    list = cur.fetchall()
+    randomUsername = list[0][1]
+
+    while randomUsername == username:
+        cur.execute("SELECT * FROM users ORDER BY RANDOM() LIMIT 1")
+        list = cur.fetchall()
+        randomUsername = list[0][1]
+
+    randomQ1 = list[0][4]
+    randomQ2 = list[0][5]
+    randomQ3 = list[0][6]
+    randomQ4 = list[0][7]
+    randomQ5 = list[0][8]
+
+    session['username'] = username
+
     #send the user back home when they submit the questionnaire. Can be changed to another page
-    return render_template('match.html', subtitle='Home Page', text='This is the home page')
+    return render_template('match.html', subtitle='Home Page', text='This is the home page', username=username, 
+    Q1=Q1, Q2=Q2, Q3=Q3, Q4=Q4, Q5=Q5, randomUsername=randomUsername, randomQ1=randomQ1, randomQ2=randomQ2, randomQ3=randomQ3, randomQ4=randomQ4, randomQ5=randomQ5)
 
 
 
 
 @app.route("/match", methods=['GET', 'POST'])
 def match():
-    #query username
-    #query questionnaire
     return render_template('match.html', subtitle='Match Page', text='Welcome to the real Fun!')
 
+
+@app.route("/match-results", methods=['POST'])
+def match_results():
+    username = session.get('username', None)
 
 
 
